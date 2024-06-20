@@ -12,25 +12,33 @@ namespace DataAccessLayer.Respository
     public class CustomerService : ICustomerInterface
     {
         private IMongoCollection<Customer> customerCollection;
+        private IMongoCollection<Invoice> invoiceCollection;
 
         public CustomerService(string connectionSring, string databaseName)
         {
             var mongoClient = new MongoClient(connectionSring);
             var mongoDatabase = mongoClient.GetDatabase(databaseName);
             customerCollection = mongoDatabase.GetCollection<Customer>("Customer");
+            invoiceCollection = mongoDatabase.GetCollection<Invoice>("Invoice");
         }
 
         public List<Customer> CustomerListAsync()
         {
-            return  customerCollection.Find(customer => true).ToList();
+            return customerCollection.Find(customer => true).ToList();
         }
-
-        public Customer GetCustomerById(string id)
+        public async Task<Customer> FindCustomerByEmail(string email)
         {
-            var objcustomer = customerCollection.Find(i => i.Id == id).FirstOrDefault();
-            return objcustomer;
+            return await customerCollection.Find(i => i.Email == email).FirstOrDefaultAsync();
         }
-
+        public async Task<Customer> FindCustomerById(string id)
+        {
+            return await customerCollection.Find(i => i.Id == id).FirstOrDefaultAsync();
+        }
+        public List<Invoice> GetInvoicesByCustomerId(string customerId)
+        {
+            var objInvoices = invoiceCollection.Find(i => i.CustomerId == customerId).ToList();
+            return objInvoices;
+        }
         public async Task AddCustomer(Customer customer)
         {
             await customerCollection.InsertOneAsync(customer);

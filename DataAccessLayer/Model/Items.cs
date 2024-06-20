@@ -11,9 +11,6 @@ namespace DataAccessLayer.Model
 {
     public class Items
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
         public string ItemCode { get; set; }
         [Required(ErrorMessage = "Item name is required.")]
         public string ItemName { get; set; }
@@ -32,7 +29,6 @@ namespace DataAccessLayer.Model
         [Required(ErrorMessage = "Quantity is required.")]
         [Range(1, double.MaxValue, ErrorMessage = "Qty must be greater than 0.")]
         public int Qty { get; set; }
-
         public double SubTotal { get; set; }
     }
 

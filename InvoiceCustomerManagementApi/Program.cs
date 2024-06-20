@@ -1,6 +1,6 @@
+using DataAccessLayer.Model;
 using DataAccessLayer.Respository;
 using DataAccessLayer.Services;
-using DataAccessLayer.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
@@ -16,23 +16,41 @@ builder.Services.AddSingleton<ICustomerInterface>(serviceProvider =>
     return new CustomerService(connectionString, databaseName);
 });
 
-
 builder.Services.AddSingleton<IInvoiceInterface>(serviceProvider =>
 {
     return new InvoiceService(connectionString, databaseName);
 });
 
-builder.Services.AddSingleton<IMongoCollection<DynamicJsonResponse>>(provider =>
+builder.Services.AddSingleton<IMongoCollection<Invoice>>(provider =>
 {
     var mongoClient = new MongoClient(connectionString);
     var database = mongoClient.GetDatabase(databaseName);
-    return database.GetCollection<DynamicJsonResponse>("Invoice");
+    return database.GetCollection<Invoice>("Invoice");
+});
+builder.Services.AddSingleton<IMongoCollection<Customer>>(provider =>
+{
+    var mongoClient = new MongoClient(connectionString);
+    var database = mongoClient.GetDatabase(databaseName);
+    return database.GetCollection<Customer>("Customer");
 });
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+        });
+});
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -47,6 +65,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.UseCors(builder =>
+{
+    builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader();
+});
+
+app.UseCors(
+    options => options.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader()
+);
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

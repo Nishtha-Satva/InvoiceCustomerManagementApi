@@ -11,8 +11,6 @@ namespace DataAccessLayer.Model
 {
     public class Invoice
     {
-        public class Invoices
-        {
             [BsonId]
             [BsonRepresentation(BsonType.ObjectId)]
             public string? Id { get; set; }
@@ -34,20 +32,14 @@ namespace DataAccessLayer.Model
 
             public string CustomerId { get; set; }
 
+            [Range(1, 2, ErrorMessage = "Invalid status type")]
+            public Status Status { get; set; }
 
             [Required(ErrorMessage = "At least one line item is required.")]
 
             public List<ItemInvoice> LineItems { get; set; }
 
             public double? Total { get; set; }
-
-            public int Discount { get; set; }
-
-            public double? DiscountAmount { get; set; }
-
-            public double ShippingCharges { get; set; }
-
-            public double? NetAmount { get; set; }
 
         }
 
@@ -70,5 +62,11 @@ namespace DataAccessLayer.Model
             public string State { get; set; }
 
         }
+
+    public enum Status
+    {
+        Paid = 1,
+        Unpaid = 2,
     }
 }
+

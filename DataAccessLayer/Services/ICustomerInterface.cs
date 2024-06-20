@@ -13,10 +13,13 @@ namespace DataAccessLayer.Services
 
         List<Customer> CustomerListAsync();
 
-        Customer GetCustomerById(string id);
-
         Task UpdateCustomer(string id, Customer customer);
 
         Task DeleteCustomer(string id);
+        List<Invoice> GetInvoicesByCustomerId(string customerId);
+
+        Task<Customer> FindCustomerByEmail(string email);
+
+        Task<Customer> FindCustomerById(string id);
     }
 }
